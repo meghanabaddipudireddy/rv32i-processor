@@ -18,6 +18,10 @@ module reg_file(
 
     //write if reg_write is 1
     always_ff @(posedge clk) begin
+        if (rst) begin
+            for (int i = 0; i < 32; i++)
+                registers[i] <= 32'b0;
+        end
         if (reg_write) begin
             registers[rd] <= wr_data;
         end
