@@ -1,8 +1,6 @@
 import risc32i_pkg::*;
 
 module alu(
-    input logic clk,
-    input logic rst,
     input logic [31:0] rd_1,
     input logic [31:0] rd_2,
     input logic [3:0] alu_op,
