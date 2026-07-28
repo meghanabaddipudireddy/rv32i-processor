@@ -1,0 +1,25 @@
+# program.hex
+# ADDI x1, x0, 5      → x1 = 5
+00500093
+# ADDI x2, x0, 3      → x2 = 3
+00300113
+# ADD x3, x1, x2      → x3 = 8
+002081B3
+# SUB x4, x1, x2      → x4 = 2
+402081B3 
+# AND x5, x1, x2      → x5 = 1 (0101 & 0011 = 0001)
+0020F2B3
+# OR x6, x1, x2       → x6 = 7 (0101 | 0011 = 0111)
+00206333
+# XOR x7, x1, x2      → x7 = 6 (0101 ^ 0011 = 0110)
+002083B3 
+# SW x1, 0(x0)        → store 5 at address 0
+00102023
+# LW x8, 0(x0)        → x8 = 5
+00002403
+# BEQ x1, x1, +4      → should branch (x1 == x1)
+00108263
+# ADDI x9, x0, 99     → should be SKIPPED if branch worked
+06300493
+# ADDI x10, x0, 42    → x10 = 42, proves we landed here after branch
+02A00513
