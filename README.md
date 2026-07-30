@@ -8,6 +8,7 @@ A single-cycle RISC-V 32-bit processor implemented in SystemVerilog, targeting F
 
 - [x] Single-cycle datapath — complete
 - [x] ISA subset implemented
+- [x] Pipeline registers (IF/ID, ID/EX, EX/MEM, MEM/WB)
 - [ ] Pipeline registers (IF/ID, ID/EX, EX/MEM, MEM/WB)
 - [ ] Hazard detection + stalling
 - [ ] Data forwarding
@@ -164,13 +165,6 @@ gtkwave rv32i_top_tb.vcd
 ---
 
 ## Planned Extensions
-
-### 5-Stage Pipeline
-Add pipeline registers (structs) between each stage boundary:
-- IF/ID — holds PC, instruction
-- ID/EX — holds decoded fields, register values, control signals
-- EX/MEM — holds ALU result, write data, control signals
-- MEM/WB — holds memory read data or ALU result, control signals
 
 ### Hazard Detection
 Detect RAW data hazards by comparing source registers in ID stage against destination registers in EX and MEM stages. Insert pipeline stalls (bubbles) when a hazard is detected.
