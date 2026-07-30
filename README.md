@@ -9,8 +9,7 @@ A single-cycle RISC-V 32-bit processor implemented in SystemVerilog, targeting F
 - [x] Single-cycle datapath — complete
 - [x] ISA subset implemented
 - [x] Pipeline registers (IF/ID, ID/EX, EX/MEM, MEM/WB)
-- [ ] Pipeline registers (IF/ID, ID/EX, EX/MEM, MEM/WB)
-- [ ] Hazard detection + stalling
+- [x] Hazard detection + stalling
 - [ ] Data forwarding
 - [ ] Branch handling + pipeline flush
 - [ ] FPGA synthesis + timing analysis
@@ -90,6 +89,8 @@ rv32i-processor/
 │   ├── alu.sv             — arithmetic logic unit
 │   ├── data_memory.sv     — data memory (RAM)
 │   └── control_unit.sv    — control unit
+│   └── hazard_unit.sv     — hazard unit
+
 ├── tb/
 │   └── rv32i_top_tb.sv    — testbench
 ├── program.hex            — test program loaded at simulation start
@@ -165,9 +166,6 @@ gtkwave rv32i_top_tb.vcd
 ---
 
 ## Planned Extensions
-
-### Hazard Detection
-Detect RAW data hazards by comparing source registers in ID stage against destination registers in EX and MEM stages. Insert pipeline stalls (bubbles) when a hazard is detected.
 
 ### Data Forwarding
 Forward results from EX/MEM and MEM/WB pipeline registers directly back to ALU inputs, eliminating most stalls. Only load-use hazards still require a stall after forwarding is implemented.
