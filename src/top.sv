@@ -144,4 +144,6 @@ module top (
     data_memory u_data_memory( .clk(clk), .address(ex_mem_reg.alu_result), .wr_data(ex_mem_reg.rd_data_2), .mem_write(ex_mem_reg.mem_write), .mem_read(ex_mem_reg.mem_read), .read_data(mem_read_data));
     control_unit u_control_unit(.opcode(if_id_instr[6:0]), .funct3(if_id_instr[14:12]), .funct7(if_id_instr[31:25]), .zero(zero), .reg_write(reg_write), .alu_src(alu_src), .mem_write(mem_write), .mem_read(mem_read), .mem_to_reg(mem_to_reg), .pc_src(pc_src), .alu_op(alu_op));
     hazard_unit u_hazard_unit(.rs1(if_id_instr[19:15]), .rs2(if_id_instr[24:20]), .id_ex_rd(id_ex_reg.rd), .id_ex_reg_write(id_ex_reg.reg_write), .ex_mem_rd(ex_mem_reg.rd), .ex_mem_reg_write(ex_mem_reg.reg_write), .pc_write(pc_write), .if_id_write(if_id_write), .bubble(bubble));
+
+    //hello
 endmodule
