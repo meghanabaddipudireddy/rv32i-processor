@@ -11,7 +11,7 @@ A single-cycle RISC-V 32-bit processor implemented in SystemVerilog, targeting F
 - [x] Pipeline registers (IF/ID, ID/EX, EX/MEM, MEM/WB)
 - [x] Hazard detection + stalling
 - [x] Data forwarding
-- [ ] Branch handling + pipeline flush
+- [x] Branch handling + pipeline flush
 - [ ] FPGA synthesis + timing analysis
 
 ---

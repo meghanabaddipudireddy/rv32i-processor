@@ -50,6 +50,9 @@ module top (
     logic [31:0] alu_a;
     logic [31:0] alu_b_pre;
 
+    // branch flush signal
+    logic branch_flush;
+
     //pc logic
     always_ff @(posedge clk) begin
         if begin
@@ -68,13 +71,16 @@ module top (
     assign alu_input_b = id_ex_reg.alu_src ? id_ex_reg.imm : alu_b_pre;
     assign writeback = mem_wb_reg.mem_to_reg ? mem_wb_reg.mem_read_data : mem_wb_reg.alu_result;
 
+    //branch flush
+    assign branch_flush = ex_mem_reg.pc_src && ex_mem_reg.zero;
+
     //pipeline registers
 
     //IF/ID pipeline register
     logic [31:0] if_id_pc;
     logic [31:0] if_id_instr; 
     always_ff @(posedge clk) begin
-        if(rst) begin
+        if(rst || branch_flush) begin
             if_id_pc <= 0;
             if_id_instr <= 0;
         end
@@ -87,7 +93,7 @@ module top (
     //ID/EX register
     id_ex_t id_ex_reg;
     always_ff @(posedge clk) begin
-        if(rst || bubble) begin
+        if(rst || bubble || branch_flush) begin
             id_ex_reg <= '0;
         end
         else begin
