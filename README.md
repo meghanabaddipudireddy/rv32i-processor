@@ -10,7 +10,7 @@ A single-cycle RISC-V 32-bit processor implemented in SystemVerilog, targeting F
 - [x] ISA subset implemented
 - [x] Pipeline registers (IF/ID, ID/EX, EX/MEM, MEM/WB)
 - [x] Hazard detection + stalling
-- [ ] Data forwarding
+- [x] Data forwarding
 - [ ] Branch handling + pipeline flush
 - [ ] FPGA synthesis + timing analysis
 
@@ -166,9 +166,6 @@ gtkwave rv32i_top_tb.vcd
 ---
 
 ## Planned Extensions
-
-### Data Forwarding
-Forward results from EX/MEM and MEM/WB pipeline registers directly back to ALU inputs, eliminating most stalls. Only load-use hazards still require a stall after forwarding is implemented.
 
 ### Branch Handling
 Flush IF/ID and ID/EX pipeline registers when a branch is taken, preventing incorrectly-fetched instructions from completing.

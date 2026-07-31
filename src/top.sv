@@ -44,6 +44,12 @@ module top (
     logic if_id_write;
     logic bubble;
 
+    // forwarding signals
+    logic [1:0] forward_a;
+    logic [1:0] forward_b;
+    logic [31:0] alu_a;
+    logic [31:0] alu_b_pre;
+
     //pc logic
     always_ff @(posedge clk) begin
         if begin
@@ -59,7 +65,7 @@ module top (
     assign next_pc = (ex_mem_reg.pc_src && ex_mem_reg.zero) ? branch_target : pc_4;
 
     //muxes
-    assign alu_input_b = id_ex_reg.alu_src ? id_ex_reg.imm : id_ex_reg.rd_data_2;
+    assign alu_input_b = id_ex_reg.alu_src ? id_ex_reg.imm : alu_b_pre;
     assign writeback = mem_wb_reg.mem_to_reg ? mem_wb_reg.mem_read_data : mem_wb_reg.alu_result;
 
     //pipeline registers
@@ -136,14 +142,35 @@ module top (
         end
     end
 
+    //3-way ALUs
+    
+    //ALU input A
+    always_comb begin
+        case(forward_a) 
+            2'b00 : alu_a = id_ex_reg.rd_data_1;
+            2'b01 : alu_a = ex_mem_reg.alu_result;
+            2'b10 : alu_a = writeback;
+            default : alu_a = id_ex_reg.rd_data_1;
+        endcase
+    end
+
+    //ALU input B
+    always_comb begin
+        case(forward_b)
+            2'b00 : alu_b_pre = id_ex_reg.rd_data_2;
+            2'b01 : alu_b_pre = ex_mem_reg.alu_result;
+            2'b10 : alu_b_pre = writeback;
+            default : id_ex_reg.rd_data_2;
+        endcase
+    end
     //instantiations
     instr_mem u_instr_mem (.pc(pc), .instr(instr));
     reg_file u_reg_file (.clk(clk), .rst(rst), .reg_write(mem_wb_reg.reg_write), .rs1(if_id_instr[19:15]),.rs2(if_id_instr[24:20]), .rd(mem_wb_reg.rd), .wr_data(writeback), .rd_data_1(rd_data_1), .rd_data_2(rd_data_2));
     imm_gen u_imm_gen(.in(if_id_instr),.opcode(if_id_instr[6:0]),.out(imm_out));
-    alu u_alu(.rd_1(id_ex_reg.rd_data_1), .rd_2(alu_input_b), .alu_op(id_ex_reg.alu_op), .zero(zero), .result(alu_res));
+    alu u_alu(.rd_1(alu_a), .rd_2(alu_input_b), .alu_op(id_ex_reg.alu_op), .zero(zero), .result(alu_res));
     data_memory u_data_memory( .clk(clk), .address(ex_mem_reg.alu_result), .wr_data(ex_mem_reg.rd_data_2), .mem_write(ex_mem_reg.mem_write), .mem_read(ex_mem_reg.mem_read), .read_data(mem_read_data));
     control_unit u_control_unit(.opcode(if_id_instr[6:0]), .funct3(if_id_instr[14:12]), .funct7(if_id_instr[31:25]), .zero(zero), .reg_write(reg_write), .alu_src(alu_src), .mem_write(mem_write), .mem_read(mem_read), .mem_to_reg(mem_to_reg), .pc_src(pc_src), .alu_op(alu_op));
-    hazard_unit u_hazard_unit(.rs1(if_id_instr[19:15]), .rs2(if_id_instr[24:20]), .id_ex_rd(id_ex_reg.rd), .id_ex_reg_write(id_ex_reg.reg_write), .ex_mem_rd(ex_mem_reg.rd), .ex_mem_reg_write(ex_mem_reg.reg_write), .pc_write(pc_write), .if_id_write(if_id_write), .bubble(bubble));
+    hazard_unit u_hazard_unit(.rs1(if_id_instr[19:15]), .rs2(if_id_instr[24:20]), .id_ex_rd(id_ex_reg.rd), .id_ex_mem_read(id_ex_reg.mem_read), .pc_write(pc_write), .if_id_write(if_id_write), .bubble(bubble));
+    forwarding_unit u_forwarding_unit(.id_ex_rs1(id_ex_reg.rs1), .id_ex_rs2(id_ex_reg.rs2), .ex_mem_rd(ex_mem_reg.rd), .ex_mem_reg_write(ex_mem_reg.reg_write), .mem_wb_rd(mem_wb_reg.rd), .mem_wb_reg_write(mem_wb_reg.reg_write), .forwarding_a(forward_a), .forwarding_b(forward_b));
 
-    //hello
 endmodule
