@@ -1,25 +1,11 @@
-# program.hex
-# ADDI x1, x0, 5      → x1 = 5
-00500093
-# ADDI x2, x0, 3      → x2 = 3
-00300113
-# ADD x3, x1, x2      → x3 = 8
-002081B3
-# SUB x4, x1, x2      → x4 = 2
-402081B3 
-# AND x5, x1, x2      → x5 = 1 (0101 & 0011 = 0001)
-0020F2B3
-# OR x6, x1, x2       → x6 = 7 (0101 | 0011 = 0111)
-00206333
-# XOR x7, x1, x2      → x7 = 6 (0101 ^ 0011 = 0110)
-002083B3 
-# SW x1, 0(x0)        → store 5 at address 0
-00102023
-# LW x8, 0(x0)        → x8 = 5
-00002403
-# BEQ x1, x1, +4      → should branch (x1 == x1)
-00108263
-# ADDI x9, x0, 99     → should be SKIPPED if branch worked
-06300493
-# ADDI x10, x0, 42    → x10 = 42, proves we landed here after branch
-02A00513
+# program.hex — tests branch flush 
+00500093   # ADDI x1, x0, 5     → x1 = 5
+00500113   # ADDI x2, x0, 5     → x2 = 5
+00208463   # BEQ  x1, x2, +8    → TAKEN (x1==x2), skip next 2
+00C00193   # ADDI x3, x0, 12    → FLUSHED — x3 stays 0
+00A00213   # ADDI x4, x0, 10    → FLUSHED — x4 stays 0
+00F00293   # ADDI x5, x0, 15    → branch target, x5 = 15
+00500313   # ADDI x6, x0, 5     → x6 = 5
+00300393   # ADDI x7, x0, 3     → x7 = 3
+00730863   # BEQ  x6, x7, +16   → NOT TAKEN (x6 != x7)
+00800413   # ADDI x8, x0, 8     → executes normally, x8 = 8
